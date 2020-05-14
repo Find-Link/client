@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import GalleryLink from '../components/Gallery/GalleryLink';
+import CardLink from '../components/Card/CardLink';
 
 const data = [
   {
@@ -27,6 +28,7 @@ function Home(): ReactElement {
       <Row>
         <Col>
           <GalleryLink data={data} />
+          <CardLink />
         </Col>
       </Row>
     </Container>

@@ -1,9 +1,38 @@
-.gallery-link {
-  display: flex;
-  flex-wrap: wrap;
+@mixin gallery-link-desktop {
+  .gallery-link {
+    display: flex;
+    justify-content: center;
 
-  img {
-    height: 4rem;
-    width: 4rem;
+    a {
+      img {
+        height: 15rem;
+        width: 15rem;
+        margin: 0 0.5rem;
+      }
+    }
+  }
+}
+
+.gallery-link {
+  display: grid;
+  grid-template-columns: 15rem 15rem;
+  grid-template-rows: 15rem 15rem;
+  justify-content: center;
+  justify-items: center;
+  row-gap: 1rem;
+  column-gap: 1rem;
+  margin: 1rem 0;
+
+  a {
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      transition: 0.4s all;
+    }
+
+    &:hover img {
+      filter: brightness(80%);
+    }
   }
 }

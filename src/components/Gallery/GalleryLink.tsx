@@ -11,13 +11,16 @@ interface Props {
 }
 
 function GalleryLink({ data }: Props): ReactElement {
-  const renderImages = (): ReactElement[] => data.map(({ image, link }, index) => (
-    <Link key={`${index}-${image}`} href={link}>
-      <a>
-        <img src={image} alt="Gallery" />
-      </a>
-    </Link>
-  ));
+  const renderImages = (): ReactElement[] => data.map(({ image, link }, index) => {
+    const key = `${index}-${image}`;
+    return (
+      <Link key={key} href={link}>
+        <a>
+          <img src={image} alt="Gallery" />
+        </a>
+      </Link>
+    );
+  });
 
   return (
     <div className="gallery-link">

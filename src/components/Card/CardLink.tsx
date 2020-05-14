@@ -7,25 +7,26 @@ import {
   Col,
 } from 'react-bootstrap';
 
+import CardLinkItem from './CardLinkItem';
+
 function CardLink(): ReactElement {
   return (
     <div className="card-link">
       <Row className="card-link-search">
-        <Col md={6}>
-          <Form inline className="card-link-search-form">
-            <Form.Label>Search something</Form.Label>
+        <Col md={6} className="card-link-search-form">
+          <Form inline>
             <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-            <Button variant="outline-success">Search</Button>
+            <Button variant="secondary">Search</Button>
           </Form>
         </Col>
         <Col md={6} className="card-link-search-filter">
-          <span>Filter</span>
-          <div className="card-link-search-filter-button">
-            <Button variant="outline-success">Relevant</Button>
-            <Button variant="outline-success">Popular</Button>
-            <Button variant="outline-success">Date</Button>
-          </div>
+          <Button variant="outline-secondary">Relevant</Button>
+          <Button variant="outline-secondary">Popular</Button>
+          <Button variant="outline-secondary">Date</Button>
         </Col>
+      </Row>
+      <Row>
+        <CardLinkItem />
       </Row>
     </div>
   );

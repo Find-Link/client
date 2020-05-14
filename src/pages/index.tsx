@@ -28,8 +28,10 @@ function Home(): ReactElement {
       <Row>
         <Col>
           <GalleryLink data={data} />
-          <CardLink />
         </Col>
+      </Row>
+      <Row>
+        <CardLink />
       </Row>
     </Container>
   );

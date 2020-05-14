@@ -1,11 +1,11 @@
 import React, { memo, ReactElement } from 'react';
 import {
-    Col,
-    Card,
-    Tab,
-    Row,
-    Nav,
-    ListGroup
+  Col,
+  Card,
+  Tab,
+  Row,
+  Nav,
+  ListGroup,
 } from 'react-bootstrap';
 
 function CardLinkItem(): ReactElement {
@@ -35,20 +35,64 @@ function CardLinkItem(): ReactElement {
                     <Tab.Content>
                       <Tab.Pane eventKey="first">
                         <ListGroup className="card-link-item-right-list">
-                          <ListGroup.Item>Cras justo odio</ListGroup.Item>
-                          <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
-                          <ListGroup.Item>Morbi leo risus</ListGroup.Item>
-                          <ListGroup.Item>Porta ac consectetur ac</ListGroup.Item>
-                          <ListGroup.Item>Vestibulum at eros</ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            720p
+                          </ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            1080p
+                          </ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            720p
+                          </ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            1080p
+                          </ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            720p
+                          </ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            1080p
+                          </ListGroup.Item>
                         </ListGroup>
                       </Tab.Pane>
                       <Tab.Pane eventKey="second">
-                        Test 2
+                        <ListGroup className="card-link-item-right-list">
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            720p
+                          </ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            1080p
+                          </ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            720p
+                          </ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            1080p
+                          </ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            720p
+                          </ListGroup.Item>
+                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
+                            1080p
+                          </ListGroup.Item>
+                        </ListGroup>
                       </Tab.Pane>
                     </Tab.Content>
                   </Col>
                 </Row>
               </Tab.Container>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="card-link-item-source">
+              <span>Source: </span>
+              <a href="#" target="_blank">Phimmoi</a>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="card-link-item-tag">
+              <span>Tags: </span>
+              <a href="#" target="_blank">Movie</a>
             </Col>
           </Row>
         </Card.Body>

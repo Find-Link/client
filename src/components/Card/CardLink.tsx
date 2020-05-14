@@ -27,6 +27,11 @@ function CardLink(): ReactElement {
       </Row>
       <Row>
         <CardLinkItem />
+        <CardLinkItem />
+        <CardLinkItem />
+        <CardLinkItem />
+        <CardLinkItem />
+        <CardLinkItem />
       </Row>
     </div>
   );

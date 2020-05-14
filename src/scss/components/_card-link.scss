@@ -47,5 +47,19 @@
         overflow: auto;
       }
     }
+
+    &-source {
+      a {
+        font-weight: 600;
+        color: #192a56;
+      }
+    }
+
+    &-tag {
+      a {
+        font-style: italic;
+        color: #192a56;
+      }
+    }
   }
 }

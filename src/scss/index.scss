@@ -1,0 +1,15 @@
+// Miscellaneous
+@import './variables';
+@import './base';
+
+// Components
+@import './components/header';
+@import './components/gallery/gallery-link';
+@import './components/footer';
+
+// Pages
+@import './pages/home';
+
+// Multi screen friendly
+@import './tablet';
+@import './desktop';

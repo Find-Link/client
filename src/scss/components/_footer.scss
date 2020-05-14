@@ -1,0 +1,47 @@
+.footer {
+  background-color: $theme-color;
+  color: white;
+
+  a {
+    color: white;
+  }
+
+  &-container {
+    padding: 2rem;
+  }
+
+  &-brand {
+    img {
+      height: 4rem;
+      width: 4rem;
+    }
+  }
+
+  &-link {
+    margin-left: 25%;
+
+    span {
+      text-transform: uppercase;
+    }
+
+    ul {
+      list-style: circle;
+
+      li {
+        padding: 0.5rem 0;
+
+        a {
+          font-weight: 600;
+          display: block;
+        }
+      }
+    }
+  }
+
+  &-copyright {
+    background-color: lighten($theme-color, 20%);
+    padding: 1rem 0;
+    margin: 0;
+    text-align: center;
+  }
+}

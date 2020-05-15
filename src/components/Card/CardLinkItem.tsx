@@ -8,75 +8,68 @@ import {
   ListGroup,
 } from 'react-bootstrap';
 
-function CardLinkItem(): ReactElement {
+type Link = Record<'text' | 'link', string>;
+
+export interface ListLink {
+  [key: string]: Link[];
+}
+
+export interface Props {
+  title: string;
+  thumbnail: string;
+  listLinks: ListLink;
+  sources: Link[];
+  tags: Link[];
+}
+
+function CardLinkItem({
+  title, thumbnail, listLinks, sources, tags,
+}: Props): ReactElement {
+  const renderLinks = (links: Link[]): ReactElement[] => links.map(({ text, link }) => <a key={link} href={link} target="_blank" rel="noopener noreferrer">{text}</a>);
+
+  const { keyElements: renderKeyElements, itemElements: renderItemElements } = ((): Record<'keyElements' | 'itemElements', ReactElement[]> => {
+    const keys = Object.keys(listLinks);
+    const keyElements = keys.map((key) => (
+      <Nav.Item>
+        <Nav.Link eventKey={key}>{key}</Nav.Link>
+      </Nav.Item>
+    ));
+
+    const itemElements = keys.map((key) => (
+      <Tab.Pane eventKey={key}>
+        <ListGroup className="card-link-item-right-list">
+          {listLinks[key].map(({ text, link }) => (
+            <ListGroup.Item as="a" href={link}>
+              {text}
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </Tab.Pane>
+    ));
+
+    return { keyElements, itemElements };
+  })();
+
   return (
     <Col md={6} className="card-link-item">
       <Card>
-        <Card.Header>Finding Nemo</Card.Header>
+        <Card.Header>{title}</Card.Header>
         <Card.Body>
           <Row>
             <Col lg={4} className="card-link-item-left mb-4 mb-lg-0">
-              <img src="https://cdn-ssl.s7.disneystore.com/is/image/ShopDisney/mb_story-finding-nemo_launch_2x?$xlargeFull$&fit=constrain&cropN=0,0,1,1" alt="Thumbnail" />
+              <img src={thumbnail} alt="Thumbnail" />
             </Col>
             <Col lg={8} className="card-link-item-right">
               <Tab.Container id="left-tabs-example" defaultActiveKey="first">
                 <Row>
                   <Col sm={4}>
                     <Nav variant="pills" className="flex-column card-link-item-right-navigation">
-                      <Nav.Item>
-                        <Nav.Link eventKey="first">Phimmoi</Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                        <Nav.Link eventKey="second">FPT TV</Nav.Link>
-                      </Nav.Item>
+                      {renderKeyElements}
                     </Nav>
                   </Col>
                   <Col sm={8}>
                     <Tab.Content>
-                      <Tab.Pane eventKey="first">
-                        <ListGroup className="card-link-item-right-list">
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            720p
-                          </ListGroup.Item>
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            1080p
-                          </ListGroup.Item>
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            720p
-                          </ListGroup.Item>
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            1080p
-                          </ListGroup.Item>
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            720p
-                          </ListGroup.Item>
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            1080p
-                          </ListGroup.Item>
-                        </ListGroup>
-                      </Tab.Pane>
-                      <Tab.Pane eventKey="second">
-                        <ListGroup className="card-link-item-right-list">
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            720p
-                          </ListGroup.Item>
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            1080p
-                          </ListGroup.Item>
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            720p
-                          </ListGroup.Item>
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            1080p
-                          </ListGroup.Item>
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            720p
-                          </ListGroup.Item>
-                          <ListGroup.Item as="a" href="http://www.phimmoi.net/phim/di-tim-nemo-273/">
-                            1080p
-                          </ListGroup.Item>
-                        </ListGroup>
-                      </Tab.Pane>
+                      {renderItemElements}
                     </Tab.Content>
                   </Col>
                 </Row>
@@ -86,13 +79,13 @@ function CardLinkItem(): ReactElement {
           <Row>
             <Col className="card-link-item-source">
               <span>Source: </span>
-              <a href="#" target="_blank">Phimmoi</a>
+              {renderLinks(sources)}
             </Col>
           </Row>
           <Row>
             <Col className="card-link-item-tag">
               <span>Tags: </span>
-              <a href="#" target="_blank">Movie</a>
+              {renderLinks(tags)}
             </Col>
           </Row>
         </Card.Body>

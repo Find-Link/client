@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
 
-function Movie(): ReactElement {
+function Create(): ReactElement {
   return (
     <div>
-      Movie
+      Create
     </div>
   );
 }
 
-export default Movie;
+export default Create;

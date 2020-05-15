@@ -7,7 +7,11 @@ import {
   Col,
 } from 'react-bootstrap';
 
-import CardLinkItem from './CardLinkItem';
+import CardLinkItem, { Props as CardLinkItemProps } from './CardLinkItem';
+
+interface Props {
+  category?: string;
+}
 
 function CardLink(): ReactElement {
   return (
@@ -26,11 +30,6 @@ function CardLink(): ReactElement {
         </Col>
       </Row>
       <Row>
-        <CardLinkItem />
-        <CardLinkItem />
-        <CardLinkItem />
-        <CardLinkItem />
-        <CardLinkItem />
         <CardLinkItem />
       </Row>
     </div>

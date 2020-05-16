@@ -1,7 +1,8 @@
 import React, { ReactElement } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import GalleryLink from '../components/Gallery/GalleryLink';
-import CardLink from '../components/Card/CardLink';
+import CardLink, { CardLinkData, fetchCardLinkData } from '../components/Card/CardLink';
+import { LookUp, PropsRecord } from '../services/utils';
 
 const data = [
   {
@@ -22,7 +23,11 @@ const data = [
   },
 ];
 
-function Home(): ReactElement {
+type GetStaticProps = PropsRecord<{ cardLinkData: CardLinkData }>;
+
+type Props = LookUp<GetStaticProps, 'props'>;
+
+function Home({ cardLinkData }: Props): ReactElement {
   return (
     <Container>
       <Row>
@@ -31,10 +36,21 @@ function Home(): ReactElement {
         </Col>
       </Row>
       <Row>
-        <CardLink />
+        <CardLink data={cardLinkData} />
       </Row>
     </Container>
   );
+}
+
+
+export async function getStaticProps(): Promise<GetStaticProps> {
+  const cardLinkData = fetchCardLinkData();
+
+  return {
+    props: {
+      cardLinkData,
+    },
+  };
 }
 
 export default Home;

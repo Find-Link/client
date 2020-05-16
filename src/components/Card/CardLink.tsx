@@ -6,14 +6,33 @@ import {
   Row,
   Col,
 } from 'react-bootstrap';
+import faker from 'faker';
 
 import CardLinkItem, { Props as CardLinkItemProps } from './CardLinkItem';
+import { WithId } from '../../services/utils';
+
+export type CardLinkData = WithId<CardLinkItemProps>[];
 
 interface Props {
   category?: string;
+  data: CardLinkData;
 }
 
-function CardLink(): ReactElement {
+function CardLink({ data }: Props): ReactElement {
+  const renderItems = data.map(({
+    _id, title, thumbnail, listLinks, sources, tags, editable,
+  }) => (
+    <CardLinkItem
+      key={_id}
+      title={title}
+      thumbnail={thumbnail}
+      listLinks={listLinks}
+      sources={sources}
+      tags={tags}
+      editable={editable}
+    />
+  ));
+
   return (
     <div className="card-link">
       <Row className="card-link-search">
@@ -30,10 +49,32 @@ function CardLink(): ReactElement {
         </Col>
       </Row>
       <Row>
-        <CardLinkItem />
+        {renderItems}
       </Row>
     </div>
   );
 }
+
+const fetchCardLinkData = (): CardLinkData => {
+  const res: CardLinkData = [...Array(5)].map(() => ({
+    _id: faker.random.uuid(),
+    title: faker.name.firstName(),
+    thumbnail: faker.image.image(),
+    listLinks: [...Array(2)].map(() => ({
+      title: faker.name.firstName(),
+      links: [...Array(2)].map(() => ({
+        text: faker.name.firstName(),
+        link: faker.internet.url(),
+      })),
+    })),
+    sources: [],
+    tags: [],
+    editable: false,
+  }));
+
+  return res;
+};
+
+export { fetchCardLinkData };
 
 export default memo(CardLink);

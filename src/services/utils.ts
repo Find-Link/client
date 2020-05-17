@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { ThunkAction } from 'redux-thunk';
 
 export type RequireAtLeast<T, Keys extends keyof T = keyof T> =
@@ -23,3 +24,12 @@ export type WithId<T extends object> = T & {
 export interface PropsRecord<T> {
   props: T;
 }
+
+const alternateRendering = (condition: boolean, trueComponent: ReactNode, falseComponent: ReactNode): ReactNode => {
+  if (condition) {
+    return trueComponent;
+  }
+  return falseComponent;
+};
+
+export { alternateRendering };

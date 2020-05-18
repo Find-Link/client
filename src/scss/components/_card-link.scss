@@ -1,3 +1,12 @@
+%list-tag {
+  display: flex;
+  align-items: center;
+
+  span {
+    margin-right: 1rem;
+  }
+}
+
 .card-link {
   width: 100%;
 
@@ -70,6 +79,8 @@
     }
 
     &-source {
+      @extend %list-tag;
+
       a {
         font-weight: 600;
         color: #192a56;
@@ -77,9 +88,15 @@
     }
 
     &-tag {
+      @extend %list-tag;
+
       a {
         font-style: italic;
         color: #192a56;
+      }
+
+      div {
+        flex: 1;
       }
     }
   }

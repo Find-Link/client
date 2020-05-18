@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { alternateRendering } from '../../services/utils';
 import Dropzone from '../Dropzone';
+import Tag from '../Tag';
 
 type Link = Record<'_id' | 'text' | 'link', string>;
 
@@ -257,7 +258,11 @@ function CardLinkItem({
           <Row className="mt-2">
             <Col className="card-link-item-tag">
               <span>Tags: </span>
-              {renderLinks(tags)}
+              {alternateRendering(
+                editable,
+                <Tag />,
+                renderLinks(tags),
+              )}
             </Col>
           </Row>
         </Card.Body>

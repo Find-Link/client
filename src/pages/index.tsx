@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+
 import GalleryLink from '../components/Gallery/GalleryLink';
 import CardLink, { CardLinkData, fetchCardLinkData } from '../components/Card/CardLink';
 import { LookUp, PropsRecord } from '../services/utils';

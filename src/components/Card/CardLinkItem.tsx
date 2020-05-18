@@ -15,6 +15,7 @@ import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 import { alternateRendering } from '../../services/utils';
+import Dropzone from '../Dropzone';
 
 type Link = Record<'_id' | 'text' | 'link', string>;
 
@@ -33,14 +34,32 @@ export interface Props {
   editable?: boolean;
 }
 
+interface State extends Props{
+  previewThumbnail: string;
+}
+
+const imagePlaceHolder = '/assets/img/imagePlaceholder.png';
+
 function CardLinkItem({
   title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable = false,
 }: Props): ReactElement {
   const [{
-    title, thumbnail, listLinks, sources, tags,
-  }, setState] = useState({
-    title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp,
+    previewThumbnail, title, thumbnail, listLinks, sources, tags,
+  }, setState] = useState<State>({
+    previewThumbnail: imagePlaceHolder, title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp,
   });
+
+  const onDrop = (acceptedFiles: File[]): void => {
+    const selectFile = _.last(acceptedFiles)!;
+    const reader = new FileReader();
+    reader.readAsDataURL(selectFile);
+    reader.onloadend = (): void => {
+      setState((prevState) => ({
+        ...prevState,
+        previewThumbnail: reader.result as string,
+      }));
+    };
+  };
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -157,8 +176,8 @@ function CardLinkItem({
         <ListGroup className="card-link-item-right-list">
           {links.map(({ _id: linkId, text, link }, index) => alternateRendering(
             editable,
-            <>
-              <div className="d-flex mb-2" key={linkId}>
+            <div key={linkId}>
+              <div className="d-flex mb-2">
                 <Form.Control className="mr-2" type="text" value={link} name="link" onChange={onListLinksItemChange(_id, linkId)} />
                 <Form.Control className="mr-4" type="text" value={text} name="text" onChange={onListLinksItemChange(_id, linkId)} />
                 {alternateRendering(
@@ -176,7 +195,7 @@ function CardLinkItem({
                 </Button>,
                 null,
               )}
-            </>,
+            </div>,
             <ListGroup.Item key={linkId} as="a" href={link} target="_blank" rel="noopener noreferrer">
               {text}
             </ListGroup.Item>,
@@ -185,7 +204,7 @@ function CardLinkItem({
       </Tab.Pane>
     ));
 
-    const firstKeyTitle = listLinks.length > 0 ? _.first(listLinks)._id : '';
+    const firstKeyTitle = listLinks.length > 0 ? _.first(listLinks)!._id : '';
 
     return { keyElements, itemElements, firstKey: firstKeyTitle };
   })();
@@ -199,7 +218,11 @@ function CardLinkItem({
         <Card.Body>
           <Row>
             <Col lg={4} className="card-link-item-left mb-4 mb-lg-0">
-              <img src={thumbnail} alt="Thumbnail" />
+              {alternateRendering(
+                editable,
+                <Dropzone onDrop={onDrop} preview={previewThumbnail} />,
+                <img src={thumbnail} alt="Thumbnail" />,
+              )}
             </Col>
             <Col lg={8} className="card-link-item-right">
               <Tab.Container defaultActiveKey={firstKey}>

@@ -12,6 +12,7 @@ import {
   Button,
 } from 'react-bootstrap';
 import _ from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 import { alternateRendering } from '../../services/utils';
 
@@ -50,6 +51,21 @@ function CardLinkItem({
     }));
   };
 
+  const onListLinksTitleAdd = (): void => {
+    listLinks.push({
+      _id: uuidv4(),
+      title: '',
+      links: [
+        { _id: uuidv4(), text: '', link: '' },
+      ],
+    });
+
+    setState((prevState) => ({
+      ...prevState,
+      listLinks: [...listLinks],
+    }));
+  };
+
   const onListLinksTitleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { id, value } = e.target;
 
@@ -66,6 +82,19 @@ function CardLinkItem({
       ...prevState,
       listLinks: filterListLinks,
     }));
+  };
+
+  const onListLinksItemAdd = (id: string) => (): void => {
+    const listLinkIndex = listLinks.findIndex(({ _id }) => id === _id);
+
+    if (listLinkIndex !== -1) {
+      listLinks[listLinkIndex].links.push({ _id: uuidv4(), text: '', link: '' });
+
+      setState((prevState) => ({
+        ...prevState,
+        listLinks: [...listLinks],
+      }));
+    }
   };
 
   const onListLinksItemChange = (id: string, linkId: string) => (e: ChangeEvent<HTMLInputElement>): void => {
@@ -90,10 +119,11 @@ function CardLinkItem({
 
     if (listLinkIndex !== -1 && linkIndex !== -1) {
       listLinks[listLinkIndex].links = listLinks[listLinkIndex].links.filter(({ _id }) => linkId !== _id);
+      const filterListLinks = listLinks[listLinkIndex].links.length === 0 ? listLinks.filter(({ _id }) => id !== _id) : listLinks;
 
       setState((prevState) => ({
         ...prevState,
-        listLinks: [...listLinks],
+        listLinks: [...filterListLinks],
       }));
     }
   };
@@ -107,29 +137,46 @@ function CardLinkItem({
           <Nav.Link eventKey={_id}>
             {alternateRendering(
               editable,
-              <Form.Control key={_id} type="text" value={listLinkTitle} id={_id} onChange={onListLinksTitleChange} />,
+              <Form.Control type="text" value={listLinkTitle} id={_id} onChange={onListLinksTitleChange} />,
               listLinkTitle,
             )}
           </Nav.Link>
         </Nav.Item>
-        <Button variant="danger" onClick={onListLinksTitleDelete(_id)} className="card-link-item-right-navigation-item-button">
-          <i className="fas fa-trash-alt" />
-        </Button>
+        {alternateRendering(
+          editable,
+          <Button variant="danger" onClick={onListLinksTitleDelete(_id)} className="card-link-item-right-navigation-item-button">
+            <i className="fas fa-trash-alt" />
+          </Button>,
+          null,
+        )}
       </div>
     ));
 
     const itemElements = listLinks.map(({ _id, links }) => (
       <Tab.Pane key={_id} eventKey={_id}>
         <ListGroup className="card-link-item-right-list">
-          {links.map(({ _id: linkId, text, link }) => alternateRendering(
+          {links.map(({ _id: linkId, text, link }, index) => alternateRendering(
             editable,
-            <div className="d-flex mb-2" key={linkId}>
-              <Form.Control className="mr-2" type="text" value={link} name="link" onChange={onListLinksItemChange(_id, linkId)} />
-              <Form.Control className="mr-4" type="text" value={text} name="text" onChange={onListLinksItemChange(_id, linkId)} />
-              <Button variant="danger" onClick={onListLinksItemDelete(_id, linkId)}>
-                <i className="fas fa-trash-alt" />
-              </Button>
-            </div>,
+            <>
+              <div className="d-flex mb-2" key={linkId}>
+                <Form.Control className="mr-2" type="text" value={link} name="link" onChange={onListLinksItemChange(_id, linkId)} />
+                <Form.Control className="mr-4" type="text" value={text} name="text" onChange={onListLinksItemChange(_id, linkId)} />
+                {alternateRendering(
+                  editable,
+                  <Button variant="danger" onClick={onListLinksItemDelete(_id, linkId)}>
+                    <i className="fas fa-trash-alt" />
+                  </Button>,
+                  null,
+                )}
+              </div>
+              {alternateRendering(
+                editable && links.length === (index + 1),
+                <Button variant="success" onClick={onListLinksItemAdd(_id)}>
+                  <i className="fas fa-plus" />
+                </Button>,
+                null,
+              )}
+            </>,
             <ListGroup.Item key={linkId} as="a" href={link} target="_blank" rel="noopener noreferrer">
               {text}
             </ListGroup.Item>,
@@ -155,14 +202,21 @@ function CardLinkItem({
               <img src={thumbnail} alt="Thumbnail" />
             </Col>
             <Col lg={8} className="card-link-item-right">
-              <Tab.Container id="left-tabs-example" defaultActiveKey={firstKey}>
+              <Tab.Container defaultActiveKey={firstKey}>
                 <Row>
-                  <Col md={editable ? 12 : 4}>
+                  <Col md={editable ? 12 : 4} className="card-link-item-right-col">
                     <Nav variant="pills" className="card-link-item-right-navigation">
                       {renderKeyElements}
                     </Nav>
+                    {alternateRendering(
+                      editable,
+                      <Button variant="info" onClick={onListLinksTitleAdd}>
+                        <i className="fas fa-plus" />
+                      </Button>,
+                      null,
+                    )}
                   </Col>
-                  <Col md={editable ? 12 : 8}>
+                  <Col md={editable ? 12 : 8} className="card-link-item-right-col">
                     <Tab.Content>
                       {renderItemElements}
                     </Tab.Content>
@@ -171,13 +225,13 @@ function CardLinkItem({
               </Tab.Container>
             </Col>
           </Row>
-          <Row>
+          <Row className="mt-2">
             <Col className="card-link-item-source">
               <span>Source: </span>
               {renderLinks(sources)}
             </Col>
           </Row>
-          <Row>
+          <Row className="mt-2">
             <Col className="card-link-item-tag">
               <span>Tags: </span>
               {renderLinks(tags)}

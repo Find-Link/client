@@ -26,21 +26,31 @@
   }
 
   &-item {
-    max-height: 35rem;
     margin: 1rem 0;
 
     &-left {
       img {
-        height: 8rem;
+        height: 100%;
         width: 100%;
         object-fit: cover;
       }
     }
 
     &-right {
+      &-col {
+        display: flex;
+        flex-direction: column;
+        border: 1px dashed #9b9b9b;
+        margin: 1rem 0;
+        padding: 2rem;
+      }
+
       &-navigation {
+        flex-wrap: nowrap;
         flex-direction: column;
         margin: 0;
+        max-height: 15rem;
+        overflow: auto;
 
         &-item {
           align-items: center;

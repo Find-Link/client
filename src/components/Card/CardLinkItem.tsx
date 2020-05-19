@@ -1,5 +1,5 @@
 import React, {
-  memo, ReactElement, useState, ChangeEvent,
+  memo, ReactElement, useState, ChangeEvent, useEffect, useMemo, Dispatch, SetStateAction,
 } from 'react';
 import {
   Col,
@@ -14,11 +14,12 @@ import {
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
-import { alternateRendering } from '../../services/utils';
+import { alternateRendering, mutateState } from '../../services/utils';
 import Dropzone from '../Dropzone';
-import Tag, { TagItem } from '../Tag';
+import Tag from '../Tag';
 
-type Link = Record<'_id' | 'text' | 'link', string>;
+export type Link = Record<'_id' | 'text' | 'link', string>;
+export type Tag = Record<'_id' | 'text' | 'slug', string>;
 
 export interface ListLink {
   _id: string;
@@ -26,40 +27,42 @@ export interface ListLink {
   links: Link[];
 }
 
-export interface Props {
+export interface State {
   title: string;
   thumbnail: string;
   listLinks: ListLink[];
   sources: Link[];
-  tags: Link[];
+  tags: Tag[];
   editable?: boolean;
 }
 
-interface State extends Props{
-  previewThumbnail: string;
-  previewTags: TagItem[];
+export interface Props extends State {
+  parentSetState?: Dispatch<SetStateAction<State>>;
 }
 
 const imagePlaceHolder = '/assets/img/imagePlaceholder.png';
 
 function CardLinkItem({
-  title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable = false,
+  title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable: editableProp, parentSetState,
 }: Props): ReactElement {
   const [{
-    previewTags, previewThumbnail, title, thumbnail, listLinks, sources, tags,
-  }, setState] = useState<State>({
-    previewTags: [], previewThumbnail: imagePlaceHolder, title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp,
+    title, thumbnail, listLinks, sources, tags, editable = false,
+  }, childSetState] = useState<State>({
+    title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable: editableProp,
   });
 
-  const mutateState = (updatedObject: Partial<State>): void => {
-    setState((prevState) => ({
-      ...prevState,
-      ...updatedObject,
-    }));
-  };
+  const setState = parentSetState || childSetState;
+
+  useEffect(() => {
+    mutateState({
+      title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable: editableProp,
+    }, childSetState);
+  }, [editableProp, listLinksProp, sourcesProp, tagsProp, thumbnailProp, titleProps]);
 
   const onTagsChange = (newTags: string[]): void => {
-    mutateState({ previewTags: newTags });
+    const indexedTags: Tag[] = newTags.map((tag) => ({ _id: uuidv4(), text: tag, slug: tag }));
+
+    mutateState({ tags: indexedTags }, setState);
   };
 
   const onDrop = (acceptedFiles: File[]): void => {
@@ -67,14 +70,14 @@ function CardLinkItem({
     const reader = new FileReader();
     reader.readAsDataURL(selectFile);
     reader.onloadend = (): void => {
-      mutateState({ previewThumbnail: reader.result as string });
+      mutateState({ thumbnail: reader.result as string }, setState);
     };
   };
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
 
-    mutateState({ [name]: value });
+    mutateState({ [name]: value }, parentSetState!);
   };
 
   const onListLinksTitleAdd = (): void => {
@@ -86,19 +89,19 @@ function CardLinkItem({
       ],
     });
 
-    mutateState({ listLinks: [...listLinks] });
+    mutateState({ listLinks: [...listLinks] }, setState);
   };
 
   const onListLinksTitleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { id, value } = e.target;
 
-    mutateState({ listLinks: listLinks.map((listLinksData) => (id === listLinksData._id ? { ...listLinksData, title: value } : listLinksData)) });
+    mutateState({ listLinks: listLinks.map((listLinksData) => (id === listLinksData._id ? { ...listLinksData, title: value } : listLinksData)) }, setState);
   };
 
   const onListLinksTitleDelete = (id: string) => (): void => {
     const filterListLinks = listLinks.filter(({ _id }) => id !== _id);
 
-    mutateState({ listLinks: filterListLinks });
+    mutateState({ listLinks: filterListLinks }, setState);
   };
 
   const onListLinksItemAdd = (id: string) => (): void => {
@@ -107,7 +110,7 @@ function CardLinkItem({
     if (listLinkIndex !== -1) {
       listLinks[listLinkIndex].links.push({ _id: uuidv4(), text: '', link: '' });
 
-      mutateState({ listLinks: [...listLinks] });
+      mutateState({ listLinks: [...listLinks] }, setState);
     }
   };
 
@@ -120,7 +123,7 @@ function CardLinkItem({
     if (listLinkIndex !== -1 && linkIndex !== -1) {
       listLinks[listLinkIndex].links[linkIndex] = { ...listLinks[listLinkIndex].links[linkIndex], [name]: value };
 
-      mutateState({ listLinks: [...listLinks] });
+      mutateState({ listLinks: [...listLinks] }, setState);
     }
   };
 
@@ -132,13 +135,13 @@ function CardLinkItem({
       listLinks[listLinkIndex].links = listLinks[listLinkIndex].links.filter(({ _id }) => linkId !== _id);
       const filterListLinks = listLinks[listLinkIndex].links.length === 0 ? listLinks.filter(({ _id }) => id !== _id) : listLinks;
 
-      mutateState({ listLinks: [...filterListLinks] });
+      mutateState({ listLinks: [...filterListLinks] }, setState);
     }
   };
 
   const onSourceAdd = (): void => {
     sources.push({ _id: uuidv4(), text: '', link: '' });
-    mutateState({ sources: [...sources] });
+    mutateState({ sources: [...sources] }, setState);
   };
 
   const onSourceChange = (id: string) => (e: ChangeEvent<HTMLInputElement>): void => {
@@ -147,13 +150,13 @@ function CardLinkItem({
 
     if (sourceIndex !== -1) {
       sources[sourceIndex] = { ...sources[sourceIndex], [name]: value };
-      mutateState({ sources: [...sources] });
+      mutateState({ sources: [...sources] }, setState);
     }
   };
 
   const onSourceDelete = (id: string) => (): void => {
     const filterSources = sources.filter(({ _id }) => id !== _id);
-    mutateState({ sources: [...filterSources] });
+    mutateState({ sources: [...filterSources] }, setState);
   };
 
   const renderEditableSourceLinks = sources.map(({ _id, text, link }) => (
@@ -166,7 +169,8 @@ function CardLinkItem({
     </div>
   ));
 
-  const renderLinks = (links: Link[]): ReactElement[] => links.map(({ text, link }) => <a key={link} href={link} target="_blank" rel="noopener noreferrer">{text}</a>);
+  const renderLinks = (links: Link[]): ReactElement[] => links.map(({ _id, text, link }) => <a key={_id} href={link} target="_blank" rel="noopener noreferrer">{text}</a>);
+  const renderTags = tags.map(({ _id, text, slug }) => <a key={_id} href={`/tags/${slug}`}>{text}</a>);
 
   const { keyElements: renderKeyElements, itemElements: renderItemElements, firstKey } = ((): Record<'keyElements' | 'itemElements', ReactElement[]> & { firstKey: string } => {
     const keyElements = listLinks.map(({ _id, title: listLinkTitle }) => (
@@ -228,6 +232,8 @@ function CardLinkItem({
     return { keyElements, itemElements, firstKey: firstKeyTitle };
   })();
 
+  const tagsData = useMemo(() => tags.map(({ text }) => text), [tags]);
+
   return (
     <Col md={editable ? 12 : 6} className="card-link-item">
       <Card>
@@ -239,7 +245,7 @@ function CardLinkItem({
             <Col lg={4} className="card-link-item-left mb-4 mb-lg-0">
               {alternateRendering(
                 editable,
-                <Dropzone onDrop={onDrop} preview={previewThumbnail} accept="image/*" />,
+                <Dropzone onDrop={onDrop} preview={thumbnail} accept="image/*" />,
                 <img src={thumbnail} alt="Thumbnail" />,
               )}
             </Col>
@@ -289,8 +295,8 @@ function CardLinkItem({
               <span>Tags: </span>
               {alternateRendering(
                 editable,
-                <Tag tags={previewTags} onChange={onTagsChange} />,
-                renderLinks(tags),
+                <Tag tags={tagsData} onChange={onTagsChange} />,
+                renderTags,
               )}
             </Col>
           </Row>
@@ -299,5 +305,7 @@ function CardLinkItem({
     </Col>
   );
 }
+
+export { imagePlaceHolder };
 
 export default memo(CardLinkItem);

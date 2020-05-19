@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 
 import GalleryLink from '../components/Gallery/GalleryLink';
 import CardLink, { CardLinkData, fetchCardLinkData } from '../components/Card/CardLink';
@@ -30,7 +30,7 @@ type Props = LookUp<GetStaticProps, 'props'>;
 
 function Home({ cardLinkData }: Props): ReactElement {
   return (
-    <Container>
+    <>
       <Row>
         <Col>
           <GalleryLink data={data} />
@@ -39,7 +39,7 @@ function Home({ cardLinkData }: Props): ReactElement {
       <Row>
         <CardLink data={cardLinkData} />
       </Row>
-    </Container>
+    </>
   );
 }
 

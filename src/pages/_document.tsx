@@ -2,6 +2,7 @@ import Document, {
   Html, Head, Main, NextScript, DocumentInitialProps,
 } from 'next/document';
 import React, { ReactElement } from 'react';
+import { Container } from 'react-bootstrap';
 
 class MyDocument extends Document {
   static async getInitialProps(ctx): Promise<DocumentInitialProps> {
@@ -17,7 +18,9 @@ class MyDocument extends Document {
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
         </Head>
         <body>
-          <Main />
+          <Container>
+            <Main />
+          </Container>
           <NextScript />
         </body>
       </Html>

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, SetStateAction, Dispatch } from 'react';
 import { ThunkAction } from 'redux-thunk';
 
 export type RequireAtLeast<T, Keys extends keyof T = keyof T> =
@@ -32,10 +32,11 @@ const alternateRendering = (condition: boolean, trueElement: ReactNode, falseEle
   return falseElement;
 };
 
-const shouldRendering = (condition: boolean, element: ReactNode): ReactNode => {
-  if (condition) {
-    return element;
-  }
+const mutateState = <T extends object, K extends Dispatch<SetStateAction<any>>>(updatedObject: T, setState: K): void => {
+  setState((prevState: object) => ({
+    ...prevState,
+    ...updatedObject,
+  }));
 };
 
-export { alternateRendering, shouldRendering };
+export { alternateRendering, mutateState };

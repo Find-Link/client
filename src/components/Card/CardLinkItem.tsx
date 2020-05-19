@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { alternateRendering } from '../../services/utils';
 import Dropzone from '../Dropzone';
-import Tag from '../Tag';
+import Tag, { TagItem } from '../Tag';
 
 type Link = Record<'_id' | 'text' | 'link', string>;
 
@@ -37,6 +37,7 @@ export interface Props {
 
 interface State extends Props{
   previewThumbnail: string;
+  previewTags: TagItem[];
 }
 
 const imagePlaceHolder = '/assets/img/imagePlaceholder.png';
@@ -45,30 +46,35 @@ function CardLinkItem({
   title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable = false,
 }: Props): ReactElement {
   const [{
-    previewThumbnail, title, thumbnail, listLinks, sources, tags,
+    previewTags, previewThumbnail, title, thumbnail, listLinks, sources, tags,
   }, setState] = useState<State>({
-    previewThumbnail: imagePlaceHolder, title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp,
+    previewTags: [], previewThumbnail: imagePlaceHolder, title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp,
   });
+
+  const mutateState = (updatedObject: Partial<State>): void => {
+    setState((prevState) => ({
+      ...prevState,
+      ...updatedObject,
+    }));
+  };
+
+  const onTagsChange = (newTags: string[]): void => {
+    mutateState({ previewTags: newTags });
+  };
 
   const onDrop = (acceptedFiles: File[]): void => {
     const selectFile = _.last(acceptedFiles)!;
     const reader = new FileReader();
     reader.readAsDataURL(selectFile);
     reader.onloadend = (): void => {
-      setState((prevState) => ({
-        ...prevState,
-        previewThumbnail: reader.result as string,
-      }));
+      mutateState({ previewThumbnail: reader.result as string });
     };
   };
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
 
-    setState((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    mutateState({ [name]: value });
   };
 
   const onListLinksTitleAdd = (): void => {
@@ -80,28 +86,19 @@ function CardLinkItem({
       ],
     });
 
-    setState((prevState) => ({
-      ...prevState,
-      listLinks: [...listLinks],
-    }));
+    mutateState({ listLinks: [...listLinks] });
   };
 
   const onListLinksTitleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { id, value } = e.target;
 
-    setState((prevState) => ({
-      ...prevState,
-      listLinks: listLinks.map((listLinksData) => (id === listLinksData._id ? { ...listLinksData, title: value } : listLinksData)),
-    }));
+    mutateState({ listLinks: listLinks.map((listLinksData) => (id === listLinksData._id ? { ...listLinksData, title: value } : listLinksData)) });
   };
 
   const onListLinksTitleDelete = (id: string) => (): void => {
     const filterListLinks = listLinks.filter(({ _id }) => id !== _id);
 
-    setState((prevState) => ({
-      ...prevState,
-      listLinks: filterListLinks,
-    }));
+    mutateState({ listLinks: filterListLinks });
   };
 
   const onListLinksItemAdd = (id: string) => (): void => {
@@ -110,10 +107,7 @@ function CardLinkItem({
     if (listLinkIndex !== -1) {
       listLinks[listLinkIndex].links.push({ _id: uuidv4(), text: '', link: '' });
 
-      setState((prevState) => ({
-        ...prevState,
-        listLinks: [...listLinks],
-      }));
+      mutateState({ listLinks: [...listLinks] });
     }
   };
 
@@ -126,10 +120,7 @@ function CardLinkItem({
     if (listLinkIndex !== -1 && linkIndex !== -1) {
       listLinks[listLinkIndex].links[linkIndex] = { ...listLinks[listLinkIndex].links[linkIndex], [name]: value };
 
-      setState((prevState) => ({
-        ...prevState,
-        listLinks: [...listLinks],
-      }));
+      mutateState({ listLinks: [...listLinks] });
     }
   };
 
@@ -141,12 +132,39 @@ function CardLinkItem({
       listLinks[listLinkIndex].links = listLinks[listLinkIndex].links.filter(({ _id }) => linkId !== _id);
       const filterListLinks = listLinks[listLinkIndex].links.length === 0 ? listLinks.filter(({ _id }) => id !== _id) : listLinks;
 
-      setState((prevState) => ({
-        ...prevState,
-        listLinks: [...filterListLinks],
-      }));
+      mutateState({ listLinks: [...filterListLinks] });
     }
   };
+
+  const onSourceAdd = (): void => {
+    sources.push({ _id: uuidv4(), text: '', link: '' });
+    mutateState({ sources: [...sources] });
+  };
+
+  const onSourceChange = (id: string) => (e: ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
+    const sourceIndex = sources.findIndex(({ _id }) => id === _id);
+
+    if (sourceIndex !== -1) {
+      sources[sourceIndex] = { ...sources[sourceIndex], [name]: value };
+      mutateState({ sources: [...sources] });
+    }
+  };
+
+  const onSourceDelete = (id: string) => (): void => {
+    const filterSources = sources.filter(({ _id }) => id !== _id);
+    mutateState({ sources: [...filterSources] });
+  };
+
+  const renderEditableSourceLinks = sources.map(({ _id, text, link }) => (
+    <div className="card-link-item-source-input-item mb-2" key={_id}>
+      <Form.Control className="mr-2" type="text" name="text" value={text} onChange={onSourceChange(_id)} />
+      <Form.Control className="mr-2" type="text" name="link" value={link} onChange={onSourceChange(_id)} />
+      <Button variant="danger" onClick={onSourceDelete(_id)}>
+        <i className="fas fa-trash-alt" />
+      </Button>
+    </div>
+  ));
 
   const renderLinks = (links: Link[]): ReactElement[] => links.map(({ text, link }) => <a key={link} href={link} target="_blank" rel="noopener noreferrer">{text}</a>);
 
@@ -177,7 +195,7 @@ function CardLinkItem({
         <ListGroup className="card-link-item-right-list">
           {links.map(({ _id: linkId, text, link }, index) => alternateRendering(
             editable,
-            <div key={linkId}>
+            <div className="card-link-item-right-list-item" key={linkId}>
               <div className="d-flex mb-2">
                 <Form.Control className="mr-2" type="text" value={link} name="link" onChange={onListLinksItemChange(_id, linkId)} />
                 <Form.Control className="mr-4" type="text" value={text} name="text" onChange={onListLinksItemChange(_id, linkId)} />
@@ -221,7 +239,7 @@ function CardLinkItem({
             <Col lg={4} className="card-link-item-left mb-4 mb-lg-0">
               {alternateRendering(
                 editable,
-                <Dropzone onDrop={onDrop} preview={previewThumbnail} />,
+                <Dropzone onDrop={onDrop} preview={previewThumbnail} accept="image/*" />,
                 <img src={thumbnail} alt="Thumbnail" />,
               )}
             </Col>
@@ -252,7 +270,18 @@ function CardLinkItem({
           <Row className="mt-2">
             <Col className="card-link-item-source">
               <span>Source: </span>
-              {renderLinks(sources)}
+              {alternateRendering(
+                editable,
+                <>
+                  <div className="card-link-item-source-input">
+                    {renderEditableSourceLinks}
+                    <Button variant="warning" onClick={onSourceAdd}>
+                      <i className="fas fa-plus" />
+                    </Button>
+                  </div>
+                </>,
+                renderLinks(sources),
+              )}
             </Col>
           </Row>
           <Row className="mt-2">
@@ -260,7 +289,7 @@ function CardLinkItem({
               <span>Tags: </span>
               {alternateRendering(
                 editable,
-                <Tag />,
+                <Tag tags={previewTags} onChange={onTagsChange} />,
                 renderLinks(tags),
               )}
             </Col>

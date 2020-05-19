@@ -25,11 +25,17 @@ export interface PropsRecord<T> {
   props: T;
 }
 
-const alternateRendering = (condition: boolean, trueComponent: ReactNode, falseComponent: ReactNode): ReactNode => {
+const alternateRendering = (condition: boolean, trueElement: ReactNode, falseElement: ReactNode): ReactNode => {
   if (condition) {
-    return trueComponent;
+    return trueElement;
   }
-  return falseComponent;
+  return falseElement;
 };
 
-export { alternateRendering };
+const shouldRendering = (condition: boolean, element: ReactNode): ReactNode => {
+  if (condition) {
+    return element;
+  }
+};
+
+export { alternateRendering, shouldRendering };

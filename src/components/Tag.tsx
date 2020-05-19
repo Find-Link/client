@@ -1,14 +1,14 @@
-import React, { useState, ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import TagsInput from 'react-tagsinput';
 
-function Tag(): ReactElement {
-  const [tags, setTags] = useState([]);
+export type TagItem = string;
 
-  const onChange = (tag: any): void => {
-    console.log(tag);
-    setTags(tag);
-  };
+interface Props {
+  tags: TagItem[];
+  onChange: (newTags: TagItem[]) => void;
+}
 
+function Tag({ tags, onChange }: Props): ReactElement {
   return (
     <TagsInput value={tags} onChange={onChange} />
   );

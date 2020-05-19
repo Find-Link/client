@@ -4,6 +4,7 @@
 
   span {
     margin-right: 1rem;
+    min-width: 4rem;
   }
 }
 
@@ -75,11 +76,26 @@
       &-list {
         max-height: 15rem;
         overflow: auto;
+
+        &-item {
+          display: flex;
+          flex-direction: column;
+        }
       }
     }
 
     &-source {
       @extend %list-tag;
+
+      &-input {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+
+        &-item {
+          display: flex;
+        }
+      }
 
       a {
         font-weight: 600;

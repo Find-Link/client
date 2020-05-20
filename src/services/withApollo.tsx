@@ -1,13 +1,19 @@
 import React from 'react';
 import withApollo from 'next-with-apollo';
-import ApolloClient, { InMemoryCache } from 'apollo-boost';
+import { ApolloClient } from 'apollo-client';
+import { InMemoryCache } from 'apollo-boost';
 import { ApolloProvider } from '@apollo/react-hooks';
+import { createUploadLink } from 'apollo-upload-client';
+
+export type Client = (state?: any) => ApolloClient<any>;
+
+export const client: Client = (cache = {}) => new ApolloClient({
+  link: createUploadLink({ uri: '/graphql' }),
+  cache: new InMemoryCache().restore(cache),
+});
 
 export default withApollo(
-  ({ initialState }) => new ApolloClient({
-    uri: '/graphql',
-    cache: new InMemoryCache().restore(initialState || {}),
-  }),
+  client as any,
   {
     render: ({ Page, props }) => (
       <ApolloProvider client={props.apollo}>

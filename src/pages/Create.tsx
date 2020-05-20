@@ -1,35 +1,93 @@
-import React, { ReactElement, useState } from 'react';
+import React, {
+  ReactElement, useState, ChangeEvent, FormEvent,
+} from 'react';
 import {
   Form,
   Button,
+  Col,
 } from 'react-bootstrap';
-import Select from 'react-select';
+import Select, { ValueType } from 'react-select';
+import _ from 'lodash';
 
+import { useDispatch } from 'react-redux';
 import CardLinkItem, { imagePlaceHolder, State as CardState } from '../components/Card/CardLinkItem';
+import { mutateState } from '../services/utils';
+import withApollo from '../services/withApollo';
+import { withRedux } from '../services/withRedux';
+import { addPost } from '../actions/post';
 
-type Category = 'movie' | 'game' | 'application' | 'manga';
+type Option = Record<'label' | 'value', string>;
 
-interface State {
+export interface State {
   description: string;
+  category: Option;
 }
+
+const categories: Option[] = [
+  {
+    label: 'Movie',
+    value: 'movie',
+  },
+  {
+    label: 'Game',
+    value: 'game',
+  },
+  {
+    label: 'Application',
+    value: 'application',
+  },
+  {
+    label: 'Manga',
+    value: 'manga',
+  },
+];
 
 function Create(): ReactElement {
   const [{
-    title, thumbnail, listLinks, sources, tags, editable,
+    title, thumbnail, thumbnailFile, listLinks, sources, tags, editable,
   }, setCardState] = useState<CardState>({
     title: '',
     thumbnail: imagePlaceHolder,
+    thumbnailFile: null,
     listLinks: [],
     sources: [],
     tags: [],
     editable: true,
   });
-  const [{ description }, setState] = useState<State>({
+  const dispatch = useDispatch();
+
+  const [{ description, category }, setState] = useState<State>({
     description: '',
+    category: _.first(categories)!,
   });
 
+  const onInputChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
+    const { name, value } = e.target;
+
+    mutateState({ [name]: value }, setState);
+  };
+
+  const onSelectChange = (value: ValueType<Option>): void => {
+    mutateState({ category: value }, setState);
+  };
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    const serializePost = {
+      title,
+      thumbnail: thumbnailFile,
+      listLinks: listLinks.map(({ title: listLinksTitle, links }) => ({ title: listLinksTitle, links: links.map(({ text, link }) => ({ text, link })) })),
+      sources: sources.map(({ text, link }) => ({ text, link })),
+      tags: tags.map(({ text }) => text),
+      description,
+      category: category.value,
+    };
+
+    dispatch(addPost(serializePost));
+  };
+
   return (
-    <Form>
+    <Form className="row mt-4 mb-4" onSubmit={onSubmit}>
       <CardLinkItem
         title={title}
         thumbnail={thumbnail}
@@ -39,26 +97,28 @@ function Create(): ReactElement {
         editable={editable}
         parentSetState={setCardState}
       />
-      <Form.Group controlId="formBasicEmail">
-        <Form.Label>Email address</Form.Label>
-        <Form.Control type="email" placeholder="Enter email" />
-        <Form.Text className="text-muted">
-          We'll never share your email with anyone else.
-        </Form.Text>
-      </Form.Group>
 
-      <Form.Group controlId="formBasicPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" />
-      </Form.Group>
-      <Form.Group controlId="formBasicCheckbox">
-        <Form.Check type="checkbox" label="Check me out" />
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
+      <Col md={12}>
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Description</Form.Label>
+          <Form.Control name="description" as="textarea" rows={3} onChange={onInputChange} />
+        </Form.Group>
+      </Col>
+
+      <Col md={12}>
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Category</Form.Label>
+          <Select instanceId="react-select" options={categories} value={category} onChange={onSelectChange} />
+        </Form.Group>
+      </Col>
+
+      <Col md={12}>
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
+      </Col>
     </Form>
   );
 }
 
-export default Create;
+export default withRedux(withApollo(Create));

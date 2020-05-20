@@ -30,6 +30,7 @@ export interface ListLink {
 export interface State {
   title: string;
   thumbnail: string;
+  thumbnailFile?: File | null;
   listLinks: ListLink[];
   sources: Link[];
   tags: Tag[];
@@ -43,21 +44,21 @@ export interface Props extends State {
 const imagePlaceHolder = '/assets/img/imagePlaceholder.png';
 
 function CardLinkItem({
-  title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable: editableProp, parentSetState,
+  title: titleProps, thumbnail: thumbnailProp, thumbnailFile: thumbnailFileProps, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable: editableProp, parentSetState,
 }: Props): ReactElement {
   const [{
     title, thumbnail, listLinks, sources, tags, editable = false,
   }, childSetState] = useState<State>({
-    title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable: editableProp,
+    title: titleProps, thumbnail: thumbnailProp, thumbnailFile: thumbnailFileProps, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable: editableProp,
   });
 
   const setState = parentSetState || childSetState;
 
   useEffect(() => {
     mutateState({
-      title: titleProps, thumbnail: thumbnailProp, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable: editableProp,
+      title: titleProps, thumbnail: thumbnailProp, thumbnailFile: thumbnailFileProps, listLinks: listLinksProp, sources: sourcesProp, tags: tagsProp, editable: editableProp,
     }, childSetState);
-  }, [editableProp, listLinksProp, sourcesProp, tagsProp, thumbnailProp, titleProps]);
+  }, [editableProp, listLinksProp, sourcesProp, tagsProp, thumbnailFileProps, thumbnailProp, titleProps]);
 
   const onTagsChange = (newTags: string[]): void => {
     const indexedTags: Tag[] = newTags.map((tag) => ({ _id: uuidv4(), text: tag, slug: tag }));
@@ -66,11 +67,11 @@ function CardLinkItem({
   };
 
   const onDrop = (acceptedFiles: File[]): void => {
-    const selectFile = _.last(acceptedFiles)!;
+    const selectedFile = _.last(acceptedFiles)!;
     const reader = new FileReader();
-    reader.readAsDataURL(selectFile);
+    reader.readAsDataURL(selectedFile);
     reader.onloadend = (): void => {
-      mutateState({ thumbnail: reader.result as string }, setState);
+      mutateState({ thumbnail: reader.result as string, thumbnailFile: selectedFile }, setState);
     };
   };
 
@@ -238,7 +239,7 @@ function CardLinkItem({
     <Col md={editable ? 12 : 6} className="card-link-item">
       <Card>
         <Card.Header>
-          {alternateRendering(editable, <Form.Control type="text" value={title} name="title" onChange={onInputChange} />, title)}
+          {alternateRendering(editable, <Form.Control type="text" value={title} name="title" placeholder="Enter the title" onChange={onInputChange} />, title)}
         </Card.Header>
         <Card.Body>
           <Row>

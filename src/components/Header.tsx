@@ -14,8 +14,14 @@ function Header(): ReactElement {
           <Link href="/" passHref>
             <Nav.Link>Home</Nav.Link>
           </Link>
-          <Link href="/create" passHref>
-            <Nav.Link>Create</Nav.Link>
+          <Link href="/game" passHref>
+            <Nav.Link>Game</Nav.Link>
+          </Link>
+          <Link href="/application" passHref>
+            <Nav.Link>Application</Nav.Link>
+          </Link>
+          <Link href="/manga" passHref>
+            <Nav.Link>Manga</Nav.Link>
           </Link>
         </Nav>
         <Form inline>

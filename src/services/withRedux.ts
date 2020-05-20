@@ -3,9 +3,10 @@ import {
   MakeStore, createWrapper, HYDRATE,
 } from 'next-redux-wrapper';
 import thunk from 'redux-thunk';
+import { client } from './withApollo';
 import reducers from '../reducers';
 
-const globalReducer = (state, action): any => {// TODO: fix typings
+const globalReducer = (state, action): any => { // TODO: fix typings
   switch (action.type) {
     case HYDRATE:
       return { ...state, ...action.payload };
@@ -15,10 +16,11 @@ const globalReducer = (state, action): any => {// TODO: fix typings
 };
 
 const makeStore: MakeStore = () => {
-  const store = createStore(globalReducer, applyMiddleware(thunk));
+  const store = createStore(globalReducer, applyMiddleware(thunk.withExtraArgument(client)));
   return store;
 };
 
-const { withRedux, getStaticProps, getServerSideProps } = createWrapper(makeStore, { debug: true }); // TODO: remove debug flag
+const reduxStore = createWrapper(makeStore);
+export const { withRedux } = reduxStore;
 
-export { withRedux, getStaticProps, getServerSideProps };
+export default reduxStore;

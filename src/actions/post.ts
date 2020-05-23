@@ -3,11 +3,9 @@ import { gql } from 'apollo-boost';
 
 import { Client } from '../services/withApollo';
 import { RootState } from '../reducers';
-import Post from './post.type';
 
 const addPost = (newPost: any): ThunkAction<Promise<boolean>, RootState, Client, any> => async (dispatch, _getState, apolloClient): Promise<boolean> => {
   try {
-    console.log(newPost);
     const res = await apolloClient().mutate({
       mutation: gql`
         mutation addPost($newPost: AddPostInput) {
@@ -16,7 +14,7 @@ const addPost = (newPost: any): ThunkAction<Promise<boolean>, RootState, Client,
           }
         }
       `,
-      variables: { newPost },
+      variables: newPost,
     });
 
     console.log(res);

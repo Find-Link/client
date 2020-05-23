@@ -18,9 +18,10 @@ export interface Action<T, P> {
 
 export type LookUp<T, K extends keyof T> = T[K];
 
-export type WithId<T extends object> = T & {
+export interface WithId {
   _id: string;
-};
+}
+
 export interface PropsRecord<T> {
   props: T;
 }

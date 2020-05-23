@@ -11,7 +11,7 @@ import faker from 'faker';
 import CardLinkItem, { Props as CardLinkItemProps } from './CardLinkItem';
 import { WithId } from '../../services/utils';
 
-export type CardLinkData = WithId<CardLinkItemProps>[];
+export type CardLinkData = (CardLinkItemProps & WithId)[];
 
 interface Props {
   category?: string;

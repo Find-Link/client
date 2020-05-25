@@ -176,8 +176,8 @@ function CardLinkItem({
 
   const { keyElements: renderKeyElements, itemElements: renderItemElements, firstKey } = ((): Record<'keyElements' | 'itemElements', ReactElement[]> & { firstKey: string } => {
     const keyElements = listLinks.map(({ _id, title: listLinkTitle }) => (
-      <div key={_id} className="mb-1 card-link-item-right-navigation-item">
-        <Nav.Item className="card-link-item-right-navigation-item-link">
+      <div key={_id} className="mb-1 card-link-item-bottom-navigation-item">
+        <Nav.Item className="card-link-item-bottom-navigation-item-link">
           <Nav.Link eventKey={_id}>
             {alternateRendering(
               editable,
@@ -188,7 +188,7 @@ function CardLinkItem({
         </Nav.Item>
         {alternateRendering(
           editable,
-          <Button variant="danger" onClick={onListLinksTitleDelete(_id)} className="card-link-item-right-navigation-item-button">
+          <Button variant="danger" onClick={onListLinksTitleDelete(_id)} className="card-link-item-bottom-navigation-item-button">
             <i className="fas fa-trash-alt" />
           </Button>,
           null,
@@ -198,10 +198,10 @@ function CardLinkItem({
 
     const itemElements = listLinks.map(({ _id, links }) => (
       <Tab.Pane key={_id} eventKey={_id}>
-        <ListGroup className="card-link-item-right-list">
+        <ListGroup className="card-link-item-bottom-list">
           {links.map(({ _id: linkId, text, link }, index) => alternateRendering(
             editable,
-            <div className="card-link-item-right-list-item" key={linkId}>
+            <div className="card-link-item-bottom-list-item" key={linkId}>
               <div className="d-flex mb-2">
                 <Form.Control className="mr-4" type="text" value={text} name="text" onChange={onListLinksItemChange(_id, linkId)} placeholder="Text" />
                 <Form.Control className="mr-2" type="text" value={link} name="link" onChange={onListLinksItemChange(_id, linkId)} placeholder="Link" />
@@ -244,18 +244,18 @@ function CardLinkItem({
         </Card.Header>
         <Card.Body>
           <Row>
-            <Col lg={4} className="card-link-item-left mb-4 mb-lg-0">
+            <Col md={12} className="card-link-item-top mb-4 mb-lg-0">
               {alternateRendering(
                 editable,
                 <Dropzone onDrop={onDrop} preview={thumbnail} accept="image/*" />,
                 <img src={thumbnail} alt="Thumbnail" />,
               )}
             </Col>
-            <Col lg={8} className="card-link-item-right">
+            <Col md={12} className="card-link-item-bottom">
               <Tab.Container defaultActiveKey={firstKey}>
-                <Row>
-                  <Col md={editable ? 12 : 4} className="card-link-item-right-col">
-                    <Nav variant="pills" className="card-link-item-right-navigation">
+                <Row className="card-link-item-bottom-row">
+                  <Col md={editable ? 12 : 4} className="card-link-item-bottom-col">
+                    <Nav variant="pills" className="card-link-item-bottom-navigation">
                       {renderKeyElements}
                     </Nav>
                     {alternateRendering(
@@ -266,7 +266,7 @@ function CardLinkItem({
                       null,
                     )}
                   </Col>
-                  <Col md={editable ? 12 : 8} className="card-link-item-right-col">
+                  <Col md={editable ? 12 : 8} className="card-link-item-bottom-col">
                     <Tab.Content>
                       {renderItemElements}
                     </Tab.Content>

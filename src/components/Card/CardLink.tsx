@@ -10,8 +10,6 @@ interface Props {
 }
 
 function CardLink({ category, data }: Props): ReactElement {
-  console.log(data);
-
   const renderItems = data.filter((card) => category === card.category).map(({
     _id, title, thumbnail, listLinks, sources, tags,
   }) => (

@@ -42,7 +42,7 @@
   &-item {
     margin: 1rem 0;
 
-    &-left {
+    &-top {
       img {
         height: 100%;
         width: 100%;
@@ -50,13 +50,16 @@
       }
     }
 
-    &-right {
+    &-bottom {
+      &-row {
+        align-items: center;
+        margin: 1rem 0;
+      }
+
       &-col {
         display: flex;
         flex-direction: column;
-        border: 1px dashed #9b9b9b;
-        margin: 1rem 0;
-        padding: 2rem;
+        margin-bottom: 1rem;
       }
 
       &-navigation {

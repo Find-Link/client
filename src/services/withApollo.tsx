@@ -8,8 +8,9 @@ import { createUploadLink } from 'apollo-upload-client';
 export type Client = (state?: any) => ApolloClient<any>;
 
 export const client: Client = (cache = {}) => new ApolloClient({
-  link: createUploadLink({ uri: '/graphql' }),
+  link: createUploadLink({ uri: 'https://192.168.99.100/graphql' }),
   cache: new InMemoryCache().restore(cache),
+  ssrMode: true,
 });
 
 export default withApollo(

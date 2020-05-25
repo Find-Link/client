@@ -61,7 +61,8 @@ function CardLinkItem({
   }, [editableProp, listLinksProp, sourcesProp, tagsProp, thumbnailFileProps, thumbnailProp, titleProps]);
 
   const onTagsChange = (newTags: string[]): void => {
-    const indexedTags: Tag[] = newTags.map((tag) => ({ _id: uuidv4(), text: tag, slug: tag }));
+    const uniqueTags = new Set(newTags);
+    const indexedTags: Tag[] = Array.from(uniqueTags).map((tag) => ({ _id: uuidv4(), text: tag, slug: '' }));
 
     mutateState({ tags: indexedTags }, setState);
   };
@@ -162,8 +163,8 @@ function CardLinkItem({
 
   const renderEditableSourceLinks = sources.map(({ _id, text, link }) => (
     <div className="card-link-item-source-input-item mb-2" key={_id}>
-      <Form.Control className="mr-2" type="text" name="text" value={text} onChange={onSourceChange(_id)} />
-      <Form.Control className="mr-2" type="text" name="link" value={link} onChange={onSourceChange(_id)} />
+      <Form.Control className="mr-2" type="text" name="text" value={text} onChange={onSourceChange(_id)} placeholder="Text" />
+      <Form.Control className="mr-2" type="text" name="link" value={link} onChange={onSourceChange(_id)} placeholder="Link" />
       <Button variant="danger" onClick={onSourceDelete(_id)}>
         <i className="fas fa-trash-alt" />
       </Button>
@@ -180,7 +181,7 @@ function CardLinkItem({
           <Nav.Link eventKey={_id}>
             {alternateRendering(
               editable,
-              <Form.Control type="text" value={listLinkTitle} id={_id} onChange={onListLinksTitleChange} />,
+              <Form.Control type="text" value={listLinkTitle} id={_id} onChange={onListLinksTitleChange} placeholder="Title" />,
               listLinkTitle,
             )}
           </Nav.Link>
@@ -202,8 +203,8 @@ function CardLinkItem({
             editable,
             <div className="card-link-item-right-list-item" key={linkId}>
               <div className="d-flex mb-2">
-                <Form.Control className="mr-2" type="text" value={link} name="link" onChange={onListLinksItemChange(_id, linkId)} />
-                <Form.Control className="mr-4" type="text" value={text} name="text" onChange={onListLinksItemChange(_id, linkId)} />
+                <Form.Control className="mr-4" type="text" value={text} name="text" onChange={onListLinksItemChange(_id, linkId)} placeholder="Text" />
+                <Form.Control className="mr-2" type="text" value={link} name="link" onChange={onListLinksItemChange(_id, linkId)} placeholder="Link" />
                 {alternateRendering(
                   editable,
                   <Button variant="danger" onClick={onListLinksItemDelete(_id, linkId)}>

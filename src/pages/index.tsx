@@ -1,9 +1,16 @@
 import React, { ReactElement } from 'react';
 import { Row, Col } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 
 import GalleryLink from '../components/Gallery/GalleryLink';
-import CardLink, { CardLinkData, fetchCardLinkData } from '../components/Card/CardLink';
-import { LookUp, PropsRecord } from '../services/utils';
+import CardLink from '../components/Card/CardLink';
+// import { LookUp, PropsRecord } from '../services/utils';
+// import { PostSchema } from '../actions/post.type';
+import CardLinkTitle from '../components/Card/CardLinkTitle';
+import reduxStore, { withRedux } from '../services/withRedux';
+import { getPosts } from '../actions/post';
+import { RootState } from '../reducers';
+import { PostSchema } from '../actions/post.type';
 
 const data = [
   {
@@ -24,11 +31,15 @@ const data = [
   },
 ];
 
-type GetStaticProps = PropsRecord<{ cardLinkData: CardLinkData }>;
+// type GetServerSideProps = PropsRecord<{ cardLinkData: PostSchema[] }>;
 
-type Props = LookUp<GetStaticProps, 'props'>;
+// type Props = LookUp<GetServerSideProps, 'props'>;
 
-function Home({ cardLinkData }: Props): ReactElement {
+function Home(): ReactElement {
+  const cardLinkData = useSelector<RootState, PostSchema[]>(({ posts }) => posts);
+
+  console.log(cardLinkData);
+
   return (
     <>
       <Row>
@@ -37,21 +48,18 @@ function Home({ cardLinkData }: Props): ReactElement {
         </Col>
       </Row>
       <Row>
-        <CardLink data={cardLinkData} />
+        <CardLinkTitle />
+        <CardLink category="application" data={cardLinkData} />
+        <CardLink category="game" data={cardLinkData} />
+        <CardLink category="manga" data={cardLinkData} />
+        <CardLink category="movie" data={cardLinkData} />
       </Row>
     </>
   );
 }
 
+export const getServerSideProps = reduxStore.getServerSideProps(
+  async ({ store }) => store.dispatch<any>(getPosts()),
+);
 
-export async function getStaticProps(): Promise<GetStaticProps> {
-  const cardLinkData = fetchCardLinkData();
-
-  return {
-    props: {
-      cardLinkData,
-    },
-  };
-}
-
-export default Home;
+export default withRedux(Home);

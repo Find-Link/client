@@ -12,7 +12,6 @@ import _ from 'lodash';
 import { useDispatch } from 'react-redux';
 import CardLinkItem, { imagePlaceHolder, State as CardState } from '../components/Card/CardLinkItem';
 import { mutateState } from '../services/utils';
-import withApollo from '../services/withApollo';
 import { withRedux } from '../services/withRedux';
 import { addPost } from '../actions/post';
 
@@ -121,4 +120,4 @@ function Create(): ReactElement {
   );
 }
 
-export default withRedux(withApollo(Create));
+export default withRedux(Create);

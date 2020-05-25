@@ -11,6 +11,10 @@
 .card-link {
   width: 100%;
 
+  &-title {
+    text-transform: capitalize;
+  }
+
   &-search {
     &-filter {
       text-align: center;

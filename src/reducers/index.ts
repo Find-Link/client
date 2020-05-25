@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux';
 
+import posts from './posts';
+
 const rootReducer = combineReducers({
-  a: (_, action) => action.payload || '',
+  posts,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

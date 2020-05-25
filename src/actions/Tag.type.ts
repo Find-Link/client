@@ -1,32 +1,8 @@
-import { gql } from 'apollo-server';
-import { Schema, Document } from 'mongoose';
 import { WithId } from '../services/utils';
-import { Post } from './Post.type';
-import TagController from '../controllers/tag';
+import { PostSchema } from './post.type';
 
-const tagDefs = gql`
-  type Tag {
-    _id: ID
-    text: String
-    slug: String
-    posts: [Post]
-  }
-`;
-
-const tagResolvers = {
-  Tag: {
-    posts: TagController.posts,
-  },
-};
-
-export interface Tag extends WithId {
+export interface TagSchema extends WithId {
   text: string;
-  link: string;
-  posts: Post[];
+  slug: string;
+  posts: PostSchema[];
 }
-
-export interface TagSchema extends Document, Omit<Tag, '_id' |'posts'> {
-  posts: Schema.Types.ObjectId[];
-}
-
-export { tagDefs, tagResolvers };
